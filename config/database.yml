@@ -79,6 +79,4 @@ test:
 #
 production:
   <<: *default
-  database: chat_app_api_production
-  username: chat_app_api
-  password: <%= ENV["CHAT_APP_API_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>
