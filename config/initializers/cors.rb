@@ -1,6 +1,6 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins '*' # <- open to any origin for now
+    origins '*'
 
     resource '*',
       headers: :any,
@@ -9,6 +9,3 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       credentials: true
   end
 end
-
-
-Rails.logger.info "🔥 CORS middleware loaded"
