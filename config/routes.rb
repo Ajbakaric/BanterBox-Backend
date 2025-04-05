@@ -20,6 +20,7 @@ end
 
   # ActionCable WebSocket endpoint
   mount ActionCable.server => '/cable'
+  root to: proc { [200, {}, ['BanterBox API is alive']] }
 
   # API routes
   namespace :api do
