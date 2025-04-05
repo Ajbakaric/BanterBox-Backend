@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: banterbox-backend
+    env: ruby
+    plan: free
+    buildCommand: bundle install && bundle exec rake db:migrate
+    startCommand: bundle exec rails server
+    repo: https://github.com/Ajbakaric/BanterBox-Backend
+    branch: main
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: banterbox-db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
