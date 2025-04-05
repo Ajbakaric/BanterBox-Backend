@@ -4,13 +4,14 @@ class Api::V1::ChatRoomsController < ApplicationController
     end
   
     def create
-      chat_room = ChatRoom.new(chat_room_params)
+      chat_room = current_user.chat_rooms.new(chat_room_params)
       if chat_room.save
         render json: chat_room, status: :created
       else
-        render json: chat_room.errors, status: :unprocessable_entity
+        render json: { errors: chat_room.errors.full_messages }, status: :unprocessable_entity
       end
     end
+    
   
     def show
       chat_room = ChatRoom.find(params[:id])
