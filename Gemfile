@@ -48,4 +48,5 @@ group :development do
 end
 
 
-gem "rack-cors", "~> 2.0"
+gem "rack-cors", "~> 2.0", require: "rack/cors"
+
