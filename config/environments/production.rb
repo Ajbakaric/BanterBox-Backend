@@ -54,6 +54,7 @@ Rails.application.configure do
   config.i18n.fallbacks = true
   config.active_support.report_deprecations = false
   config.active_record.dump_schema_after_migration = false
+  Rails.application.routes.default_url_options[:host] = 'https://banterbox-backend-1.onrender.com'
 
   # === ✅ Add these lines to enforce CORS headers in production ===
   config.action_dispatch.default_headers.merge!({

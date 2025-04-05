@@ -16,10 +16,21 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def respond_with(resource, _opts = {})
-    token = request.env['warden-jwt_auth.token']
+    begin
+      avatar_url = resource.avatar.attached? ? url_for(resource.avatar) : nil
+    rescue => e
+      Rails.logger.error "⚠️ Avatar URL generation failed: #{e.message}"
+      avatar_url = nil
+    end
+
     render json: {
-      user: resource,
-      token: token
+      user: {
+        id: resource.id,
+        email: resource.email,
+        username: resource.username,
+        avatar_url: avatar_url
+      },
+      token: request.env['warden-jwt_auth.token']
     }, status: :ok
   end
 

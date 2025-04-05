@@ -18,41 +18,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
       return
     end
 
-    render json: {
-      user: {
-        id: current_user.id,
-        email: current_user.email,
-        username: current_user.username,
-        avatar_url: current_user.avatar.attached? ? url_for(current_user.avatar) : nil
-      }
-    }
+    render json: serialize_user(current_user)
   end
 
   # 📝 POST /signup
   def create
     build_resource(sign_up_params)
 
-    resource.save
-    if resource.persisted?
+    if resource.save
       if resource.active_for_authentication?
         token = Warden::JWTAuth::UserEncoder.new.call(resource, :user, nil).first
-
-        render json: {
-          user: {
-            id: resource.id,
-            email: resource.email,
-            username: resource.username,
-            avatar_url: resource.avatar.attached? ? url_for(resource.avatar) : nil
-          },
-          token: token
-        }, status: :ok
+        render json: serialize_user(resource).merge(token: token), status: :ok
       else
         render json: { error: 'Account not active' }, status: :unauthorized
       end
     else
-      Rails.logger.debug "Signup failed due to: #{resource.errors.full_messages.inspect}"
-      puts "Signup failed due to: #{resource.errors.full_messages.inspect}"
-
+      Rails.logger.debug "Signup failed: #{resource.errors.full_messages.inspect}"
       render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
     end
   end
@@ -60,14 +41,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # ✏️ PUT /profile
   def update
     if current_user.update(account_update_params)
-      render json: {
-        user: {
-          id: current_user.id,
-          email: current_user.email,
-          username: current_user.username,
-          avatar_url: current_user.avatar.attached? ? url_for(current_user.avatar) : nil
-        }
-      }, status: :ok
+      render json: serialize_user(current_user), status: :ok
     else
       render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
     end
@@ -83,17 +57,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
     params.require(:user).permit(:email, :password, :current_password, :username, :avatar)
   end
 
-  # 🔐 Used during sign up to return JWT token and user info
-  def respond_with(resource, _opts = {})
-    token = request.env['warden-jwt_auth.token']
-    render json: {
+  def serialize_user(user)
+    {
       user: {
-        id: resource.id,
-        email: resource.email,
-        username: resource.username,
-        avatar_url: resource.avatar.attached? ? url_for(resource.avatar) : nil
-      },
-      token: token
-    }, status: :ok
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil
+      }
+    }
   end
 end
