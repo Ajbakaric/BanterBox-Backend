@@ -22,6 +22,6 @@ module ChatAppApi
     config.action_controller.forgery_protection_origin_check = false
 
     # Enable API-only mode
-    config.api_only = true
+   # config.api_only = true
   end
 end
